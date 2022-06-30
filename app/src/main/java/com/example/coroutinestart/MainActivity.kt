@@ -22,9 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.buttonLoad.setOnClickListener {
+            binding.progress.isVisible = true
+            binding.buttonLoad.isEnabled = false
             val deferredCity: Deferred<String> = lifecycleScope.async {
-                binding.progress.isVisible = true
-                binding.buttonLoad.isEnabled = false
                 val city = loadCity()
                 binding.tvLocation.text = city
                 city
