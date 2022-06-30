@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import ru.sumin.coroutinestart.databinding.ActivityMainBinding
+import androidx.lifecycle.lifecycleScope
+import com.example.coroutinestart.databinding.ActivityMainBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,33 +20,36 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.buttonLoad.setOnClickListener {
-            loadData()
+            val jobCity = lifecycleScope.launch {
+                binding.progress.isVisible = true
+                binding.buttonLoad.isEnabled = false
+                val city = loadCity()
+                binding.tvLocation.text = city
+            }
+            val jobTemp = lifecycleScope.launch {
+                val temp = loadTemperature()
+                binding.tvTemperature.text = temp.toString()
+            }
+            lifecycleScope.launch {
+                jobCity.join()
+                jobTemp.join()
+                binding.progress.isVisible = false
+                binding.buttonLoad.isEnabled = true
+            }
         }
     }
 
-    private fun loadData() {
-        binding.progress.isVisible = true
-        binding.buttonLoad.isEnabled = false
-        val city = loadCity()
-        binding.tvLocation.text = city
-        val temp = loadTemperature(city)
-        binding.tvTemperature.text = temp.toString()
-        binding.progress.isVisible = false
-        binding.buttonLoad.isEnabled = true
+    private suspend fun loadData() {
+
     }
 
-    private fun loadCity(): String {
-        Thread.sleep(5000)
+    private suspend fun loadCity(): String {
+        delay(3000)
         return "Moscow"
     }
 
-    private fun loadTemperature(city: String): Int {
-        Toast.makeText(
-            this,
-            getString(R.string.loading_temperature_toast, city),
-            Toast.LENGTH_SHORT
-        ).show()
-        Thread.sleep(5000)
+    private suspend fun loadTemperature(): Int {
+        delay(5000)
         return 17
     }
 }
