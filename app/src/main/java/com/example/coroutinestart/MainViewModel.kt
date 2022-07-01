@@ -23,7 +23,7 @@ class MainViewModel: ViewModel() {
             delay(2000)
             Log.d(LOG_TAG, "second coroutine finished")
         }
-        val childJob3 = coroutineScope.launch {
+        val childJob3 = coroutineScope.async {
             delay(1000)
             error()
             Log.d(LOG_TAG, "third coroutine finished")
